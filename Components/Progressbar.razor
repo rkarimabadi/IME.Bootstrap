@@ -1,0 +1,46 @@
+﻿@using System.Text
+<div class="@_class"
+     role="progressbar"
+     aria-valuenow="@_valuenow"
+     aria-valuemin="@_valuemin"
+     aria-valuemax="@_valuemax"
+     style="width: @_valuenow%">@ChildContent</div>
+
+@code {
+    private string _background = string.Empty;
+    private bool _isStriped = false;
+    private bool _isAnimated = false;
+    private int _valuenow = 0;
+    private int _valuemin = 0;
+    private int _valuemax = 100;
+    private string _class = "progress-bar";
+
+    [Parameter]
+    public string Background { set{_background = value;} }
+    [Parameter]
+    public bool IsStriped { set{_isStriped = value;} }
+    [Parameter]
+    public bool IsAnimated { set{_isAnimated = value;} }
+    [Parameter]
+    public int ValueNow { set { _valuenow = value; } }
+    [Parameter]
+    public int ValueMin { set { _valuemin = value; } }
+    [Parameter]
+    public int ValueMax { set { _valuemax = value; } }
+    [Parameter]
+    public RenderFragment ChildContent { set; get; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> Attributes { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        var classString = new StringBuilder("progress-bar");
+        if(_isStriped) classString.Append(" progress-bar-striped");
+        if(_isStriped && _isAnimated) classString.Append(" progress-bar-animated");
+        if (!string.IsNullOrEmpty(_background)) classString.AppendFormat(" {0}", _background);
+        if (Attributes != null && Attributes.Keys.Any(x => x.ToLower().Contains("class"))) classString.AppendFormat(" {0}", Attributes["class"]);
+        _class = classString.ToString();
+        return base.OnParametersSetAsync();
+    }
+}
