@@ -1,13 +1,14 @@
-﻿@if(_displayState == Display.Show)
+﻿@using System.Text
+@if(_displayState == Display.Show)
 {
-    <div class=@(Attributes != null && Attributes.Keys.Any(x => x.Contains("class")) ? $"progress {Attributes["class"]}": "progress") style=@(_height > 0  ? $"height: {_height}px;\"": "")>
+    <div class="@_class" style=@(_height > 0  ? $"height: {_height}px;\"": "")>
         @ChildContent
     </div>    
 }
 
 
 @code {
-
+    private string _class="progress";
     private int _height = 0;
     private Display _displayState = Display.Show;
 
@@ -34,4 +35,13 @@
     }
 
     public enum Display { Show, Hide }
+
+    protected override void OnParametersSet()
+    {
+        var classString = new StringBuilder();
+        classString.Append("progress");
+        if (Attributes != null && Attributes.Keys.Any(x => x.Contains("class"))) classString.AppendFormat(" {0}", Attributes["class"]);
+        _class = classString.ToString();
+        base.OnParametersSet();
+    }
 }

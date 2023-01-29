@@ -1,0 +1,34 @@
+﻿@using IME.Bootstrap.Common
+@using System.Text
+<button type="button" class="@_class" disabled="@_isDisabled">@ChildContent</button>
+@code {
+    private string _class = "btn";
+    private PredefinedColor _color = PredefinedColor.Primary;
+    private PredefinedSize? _size = PredefinedSize.md;
+    private bool _isOutline = false;
+    private bool _isDisabled = false;
+    private bool _isActive = false;
+    [Parameter] public PredefinedColor Color { set { _color = value; } }
+    [Parameter] public PredefinedSize? Size { set { _size = value; } }
+    [Parameter] public bool IsOutline { set { _isOutline = value; } }
+    [Parameter] public bool IsDisabled { set { _isDisabled = value; } }
+    [Parameter] public bool IsActive { set { _isActive = value; } }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    protected override void OnParametersSet()
+    {
+        var classString = new StringBuilder("btn");
+        if (_color != null)
+        {
+            if (!_isOutline)
+                classString.AppendFormat(" btn-{0}", _color.ToString().ToLower());
+            else
+                classString.AppendFormat(" btn-outline-{0}", _color.ToString().ToLower());            
+        }
+        if(_size == PredefinedSize.lg || _size == PredefinedSize.sm)
+            classString.AppendFormat(" btn-{0}", _size.ToString().ToLower());
+        if (_isActive)
+            classString.Append(" active");
+        _class = classString.ToString();
+        base.OnParametersSet();
+    }
+}
