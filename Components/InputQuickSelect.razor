@@ -1,5 +1,7 @@
 ﻿<CascadingValue Value="this">
+    <div class="btn-group" role="group">
         @ChildContent
+    </div>
 </CascadingValue>
 
 
@@ -7,13 +9,14 @@
     [Parameter] public RenderFragment ChildContent { get; set; }
 
     public InputQuickSelectButton ActiveButton { get; set; }
-    List<InputQuickSelectButton> Buttons = new List<InputQuickSelectButton>();
+
+    private List<InputQuickSelectButton> Buttons = new List<InputQuickSelectButton>();
+
     internal void AddButton(InputQuickSelectButton Button)
     {
         Buttons.Add(Button);
         if (Buttons.Count == 1)
-            ActiveButton = Button;
-        StateHasChanged();
+            ActivateButton(Button);
     }
     internal void ActivateButton(InputQuickSelectButton button)
     {
