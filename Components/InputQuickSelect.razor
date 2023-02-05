@@ -1,4 +1,8 @@
-﻿<CascadingValue Value="this">
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using System.Linq.Expressions
+@using System.Diagnostics.CodeAnalysis
+
+<CascadingValue Value="this">
     <div class="btn-group" role="group">
         @ChildContent
     </div>
@@ -6,30 +10,22 @@
 
 
 @code {
-    [Parameter] public RenderFragment ChildContent { get; set; }
-
-    public InputQuickSelectButton ActiveButton { get; set; }
-
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    private InputQuickSelectButton ActiveButton;
     private List<InputQuickSelectButton> Buttons = new List<InputQuickSelectButton>();
 
     internal void AddButton(InputQuickSelectButton Button)
     {
         Buttons.Add(Button);
-        if (Buttons.Count == 1)
-            ActivateButton(Button);
     }
     internal void ActivateButton(InputQuickSelectButton button)
     {
         ActiveButton = button;
-        button.IsActive = true;
-        DeactiveButtons();
-        StateHasChanged();
-    }
-    private void DeactiveButtons()
-    {
-        foreach(InputQuickSelectButton button in Buttons)
+        foreach (var item in Buttons)
         {
-            if (button != ActiveButton) button.IsActive = false;
+            if(item.Value != button.Value)
+                item.Deactive();
+            
         }
     }
 }

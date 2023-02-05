@@ -3,11 +3,11 @@
 <button type="button" class="@_class" disabled="@_isDisabled">@ChildContent</button>
 @code {
     protected string _class = "btn";
-    protected PredefinedColor _color = PredefinedColor.Primary;
-    protected PredefinedSize? _size = PredefinedSize.md;
+    protected PredefinedColor _color = PredefinedColor.Info;
+    protected PredefinedSize? _size = PredefinedSize.sm;
     protected bool _isOutline = false;
     protected bool _isDisabled = false;
-    protected bool _isActive = false;
+    protected bool _isActive = true;
 
     [Parameter] public PredefinedColor Color { set { _color = value; } }
     [Parameter] public PredefinedSize? Size { set { _size = value; } }
@@ -16,7 +16,13 @@
     [Parameter] public bool IsActive { set { _isActive = value; } }
     [Parameter] public RenderFragment ChildContent { get; set; }
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
+    {
+        buildClass();
+        base.OnInitialized();
+    }
+
+    protected void buildClass()
     {
         var classString = new StringBuilder("btn");
         if (_color != null)
@@ -31,6 +37,6 @@
         if (_isActive)
             classString.Append(" active");
         _class = classString.ToString();
-        base.OnParametersSet();
+        StateHasChanged();
     }
 }
