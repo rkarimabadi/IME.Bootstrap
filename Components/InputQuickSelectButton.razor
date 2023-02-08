@@ -1,27 +1,36 @@
-﻿@inherits Button
-<button type="button" class="@_class" disabled="@_isDisabled" @onclick="Clicked">@ChildContent</button>
+﻿@using Microsoft.JSInterop
+@inherits Button
+@inject IJSRuntime JS
+
+        <label class="btn btn-primary @(_isActive ? "active" : "")">
+            <input type="radio" @onchange="Clicked" class="d-none" />
+            @Value
+        </label>
 @code {
     [Parameter] public string Value { set; get; }
     [CascadingParameter] private InputQuickSelect Parent { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (Parent == null)
             throw new ArgumentNullException(nameof(Parent), "InputQuickSelectButton must exist within a InputQuickSelect");
-        Parent.AddButton(this);
-        base.OnInitialized();
+        Parent.AddButton(Value, this);
+        base.OnInitialized();        
     }
-    protected void Clicked(EventArgs args)
-    {
-        Parent.ActivateButton(this);
-        _color = _color == Common.PredefinedColor.Primary ? Common.PredefinedColor.Info : Common.PredefinedColor.Primary;
+    protected  async Task Clicked(EventArgs args)
+    {       
         _isActive = !_isActive;
         buildClass();
+        Parent.ActivateButton(this);
     }
     internal void Deactive()
     {
-        _color = Common.PredefinedColor.Info;
         _isActive = false;
+        buildClass();
+    }
+    internal async Task Active()
+    {
+        _isActive = true;
         buildClass();
     }
 }

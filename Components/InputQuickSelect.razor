@@ -1,6 +1,8 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
+﻿@using IME.Bootstrap.Common
+@using Microsoft.AspNetCore.Components.Forms
 @using System.Linq.Expressions
 @using System.Diagnostics.CodeAnalysis
+@inherits InputBase<string>
 
 <CascadingValue Value="this">
     <div class="btn-group" role="group">
@@ -11,21 +13,48 @@
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    
     private InputQuickSelectButton ActiveButton;
-    private List<InputQuickSelectButton> Buttons = new List<InputQuickSelectButton>();
+    private Dictionary<string,InputQuickSelectButton> Buttons = new();
 
-    internal void AddButton(InputQuickSelectButton Button)
+    protected override void OnAfterRender(bool firstRender)
     {
-        Buttons.Add(Button);
+        if(Buttons.TryGetValue(CurrentValueAsString,out ActiveButton))
+        {
+            foreach (var item in Buttons.Values)
+            {
+                if(item != ActiveButton)
+                    item.Deactive();
+
+            }            
+            ActiveButton.Active();
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    internal void AddButton(string Key, InputQuickSelectButton Value )
+    {
+        Buttons.Add(Key, Value);
     }
     internal void ActivateButton(InputQuickSelectButton button)
     {
-        ActiveButton = button;
-        foreach (var item in Buttons)
+        ValueChanged.InvokeAsync(button.Value);
+    }
+
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        if (Buttons.TryGetValue(CurrentValueAsString,out ActiveButton))
         {
-            if(item.Value != button.Value)
-                item.Deactive();
-            
+            result = value;
+            validationErrorMessage = null;
+            return true;
+        }
+        else
+        {
+            result = null;
+            validationErrorMessage = "Invalid option";
+            return false;
         }
     }
+
 }
