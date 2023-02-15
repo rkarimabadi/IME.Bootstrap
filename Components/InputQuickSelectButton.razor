@@ -2,9 +2,9 @@
 @inherits Button
 @inject IJSRuntime JS
 
-        <label class="btn btn-primary @(_isActive ? "active" : "")">
+        <label class="@_class" disabled="@_isDisabled">
             <input type="radio" @onchange="Clicked" class="d-none" />
-            @Value
+            @ChildContent
         </label>
 @code {
     [Parameter] public string Value { set; get; }

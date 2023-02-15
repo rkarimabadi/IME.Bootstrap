@@ -1,0 +1,56 @@
+﻿@using System.Net.Http
+@using System.Threading.Tasks
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Forms
+
+@inherits InputBase<string>
+@inject HttpClient Http
+
+<div class="dropdown">
+<input type="text" class="form-control" id="typeahead" placeholder="Enter text..." @bind="@Text" @oninput="OnInputChanged" />
+    <div class="dropdown-menu @(SuggestionsVisible ? "show": "")" id="typeahead-dropdown" aria-labelledby="dropdownMenuButton" style="@(SuggestionsVisible ? "position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 40px);" : "")">
+    @foreach (var suggestion in Suggestions)
+    {
+        <div class="dropdown-item" @onclick="@(() => SelectSuggestion(suggestion))"> 
+            @*<a href="#" @click="selectSuggestion(suggestion)">{{suggestion}}</a>*@
+            @suggestion
+        </div>
+
+    }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Url{get; set;}
+    private string Text { get; set; }
+    private List<string> Suggestions { get; set; } = new List<string>();
+    private bool SuggestionsVisible { get; set; }
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        Text = e.Value.ToString();
+        SuggestionsVisible = false;
+        Suggestions = await GetSuggestions(Text);
+        SuggestionsVisible = true;
+    }
+
+    private async Task<List<string>> GetSuggestions(string text)
+    {
+        var response = await Http.GetAsync($"{Url}?text={text}");
+        var suggestions = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<string>>(suggestions);
+    }
+
+    private void SelectSuggestion(string suggestion)
+    {
+        Text = suggestion;
+        SuggestionsVisible = false;
+        CurrentValueAsString = suggestion;
+    }
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}
