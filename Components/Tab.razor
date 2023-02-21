@@ -1,0 +1,32 @@
+﻿@using IME.Bootstrap.Common
+@implements ITab
+<li>
+    <a @onclick="ActivateTab" class="nav-link @TitleCssClass" role="button">
+        @Title
+    </a>
+</li>
+
+@code {
+    [CascadingParameter]
+    public TabSet? ContainerTabSet { set; get; }
+    [Parameter]
+    public string? Title { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    private string? TitleCssClass
+    {
+        get
+        {
+            return ContainerTabSet?.ActiveTab == this ? "active" : null;
+        }
+    }
+    private void ActivateTab()
+    {
+        ContainerTabSet?.SetActiveTab(this);
+    }
+    protected override void OnInitialized()
+    {
+        ContainerTabSet?.AddTab(this);
+        base.OnInitialized();
+    }
+}

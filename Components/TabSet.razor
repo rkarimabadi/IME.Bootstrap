@@ -1,0 +1,29 @@
+﻿@using IME.Bootstrap.Common
+
+<CascadingValue Value="this">
+    <ul class="nav nav-tabs">
+        @ChildContent
+    </ul>
+</CascadingValue>
+<div class="nav-tabs-body p-4">
+    @ActiveTab?.ChildContent
+</div>
+@code {
+    [Parameter] public RenderFragment? ChildContent { set; get; }
+    public ITab? ActiveTab { get; private set; }
+    public void AddTab(ITab tab)
+    {
+        if(ActiveTab is null)
+        {
+            SetActiveTab(tab);
+        }
+    }
+    public void SetActiveTab(ITab tab)
+    {
+        if(ActiveTab != tab)
+        {
+            ActiveTab = tab;
+            StateHasChanged();
+        }
+    }
+}
