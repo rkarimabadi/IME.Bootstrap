@@ -1,0 +1,28 @@
+﻿<div class="drawer-wrapper @(_isOpen ? "slide" : string.Empty)">
+    <div class="drawer-mask"></div>
+    <div class="drawer">
+        <div class="drawer-content">
+            @ChildContent
+        </div>
+        <div class="drawer-controls"><button class="btn btn-secondary float-start" @onclick="Close"><i class=" bi bi-x-lg"></i> بازگشت</button></div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; } = false;
+    private bool _isOpen;
+    [Parameter, EditorRequired]
+    public RenderFragment? ChildContent { get; set; }
+    protected override void OnParametersSet()
+    {
+        if(ChildContent != null && IsOpen)
+        {
+            _isOpen = true;
+        }
+    }
+    private void Close()
+    {
+        _isOpen = false;
+    }
+}
